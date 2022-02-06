@@ -6,7 +6,6 @@ namespace RetryPolly.Services
 {
     public interface IPolicy
     {
-        public Task<HttpResponseMessage>  RetryByMaxAttemptsAsync(HttpRequestMessage httpRequestMessage,  int maxRetries);
-        public HttpResponseMessage  RetryByMaxAttempts(HttpRequestMessage httpRequestMessage,  int maxRetries);
+        public Task<HttpResponseMessage>  RetryByMaxAttemptsAsync(HttpRequestMessage httpRequestMessage,  int maxRetries); 
     }
 }

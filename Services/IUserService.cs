@@ -7,7 +7,7 @@ namespace RetryPolly.Services
 {
     public interface IUserService
     {
-        public User CreateUser(UserRequest user);
+        public Task<User> CreateUserAsync(UserRequest user);
         public Task<List<User>> GetUsersAsync();
     }
 }

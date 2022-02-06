@@ -17,9 +17,9 @@ namespace RetryPolly.Controllers
         }
         
         [HttpPost]
-        public IActionResult Create([FromBody] UserRequest request)
+        public async Task<IActionResult> Create([FromBody] UserRequest request)
         {
-            var user = _userService.CreateUser(request);
+            var user = await _userService.CreateUserAsync(request);
             
             return user == null ? BadRequest() : (IActionResult) Ok(user);
         }

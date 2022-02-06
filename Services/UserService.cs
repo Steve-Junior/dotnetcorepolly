@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RetryPolly.Contracts;
@@ -24,43 +22,48 @@ namespace RetryPolly.Services
             _configuration =  iConfig;
         }
         
-        public User CreateUser(UserRequest userRequest)
+        public async Task<User> CreateUserAsync(UserRequest userRequest)
         {
-            var request = new HttpRequestMessage();
-            request.Method = HttpMethod.Post;
-            request.RequestUri = new Uri(GoRestUrl);
-            request.Content = new StringContent(
-                JsonConvert.SerializeObject(userRequest), 
-                Encoding.UTF8, "application/json"
-                );
-            request.Headers.Add("Accept", "application/json");
-
+            var request = new HttpRequestMessage()
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri(GoRestUrl),
+                Content = new StringContent(
+                    JsonConvert.SerializeObject(userRequest), 
+                    Encoding.UTF8, "application/json"
+                )
+            };
+            
             var accessToken = _configuration.GetValue<string>("Settings:GoRestAccessToken");
             request.Headers.Add("Authorization", "Bearer " + accessToken);
-            
-            var httpResponseMessage =  _policy.RetryByMaxAttempts(request, 2);
+            request.Headers.Add("Accept", "application/json");
 
-            if (httpResponseMessage.StatusCode != HttpStatusCode.Created) return null;
-           
-            var content =  httpResponseMessage.Content.ReadAsStringAsync().Result;
+            var httpResponseMessage = await  _policy.RetryByMaxAttemptsAsync(request, 2);
 
-            return JsonConvert.DeserializeObject<User>(content);
+            return httpResponseMessage.StatusCode != HttpStatusCode.Created 
+                ? null 
+                : JsonConvert.DeserializeObject<User>(
+                    await  httpResponseMessage.Content.ReadAsStringAsync()
+                    );
         }
 
         public async Task<List<User>> GetUsersAsync()
         {
-            var request = new HttpRequestMessage();
-            request.Method = HttpMethod.Get;
-            request.RequestUri = new Uri(GoRestUrl);
+            var request = new HttpRequestMessage()
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(GoRestUrl)
+            };
+            
             request.Headers.Add("Accept", "application/json");
             
             var httpResponseMessage = await _policy.RetryByMaxAttemptsAsync(request, 3);
 
-            if (httpResponseMessage.StatusCode != HttpStatusCode.OK) return null;
-            
-            var content = await httpResponseMessage.Content.ReadAsStringAsync();
-    
-            return JsonConvert.DeserializeObject<List<User>>(content);
+            return httpResponseMessage.StatusCode != HttpStatusCode.OK 
+                ? null 
+                : JsonConvert.DeserializeObject<List<User>>(
+                    await httpResponseMessage.Content.ReadAsStringAsync()
+                    );
         }
     }
 }
