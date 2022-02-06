@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace RetryPolly.Contracts
@@ -9,9 +10,20 @@ namespace RetryPolly.Contracts
 
     public class UserRequest
     {
-        [JsonProperty("name")] public string name { get; set; }
-        [JsonProperty("email")] public string email { get; set; }
-        [JsonProperty("gender")] public string gender { get; set; }
-        [JsonProperty("status")] public string status { get; set; }
+        [Required]
+        [JsonProperty("name")]
+        public string Name { get; set; }
+        
+        [Required]
+        [JsonProperty("email")] 
+        public string Email { get; set; }
+        
+        [Required]
+        [JsonProperty("gender")] 
+        public string Gender { get; set; }
+        
+        [Required]
+        [JsonProperty("status")] 
+        public string Status { get; set; }
     }
 }
