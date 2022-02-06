@@ -13,14 +13,14 @@ namespace RetryPolly.Controllers
     public class UniversityController : ControllerBase
     {
         private readonly IUniversityService _universityService;
-
+        
         public UniversityController(
             IUniversityService universityService)
         {
             _universityService = universityService;
         }
 
-        [HttpGet("universities")]
+        [HttpGet]
         public async Task<IActionResult> GetUniversitiesByCountry(string countryName)
         {
             var universities = await _universityService.GetUniversitiesByCountryNameAsync(countryName);

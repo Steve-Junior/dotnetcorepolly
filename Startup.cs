@@ -35,6 +35,8 @@ namespace RetryPolly
             });
 
             services.AddSingleton<IUniversityService, UniversityService>();
+            services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IPolicy, PolicyService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
